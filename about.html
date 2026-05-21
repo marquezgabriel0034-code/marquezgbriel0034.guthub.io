@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — RouteSafe Barangay 770</title>
+  <link rel="stylesheet" href="navbar.css" />
+  <style>
+    .page-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .page-eyebrow {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--rs-accent); margin-bottom: 10px;
+    }
+
+    .page-title {
+      font-family: var(--rs-font-display);
+      font-size: 32px; font-weight: 700;
+      color: var(--rs-text-primary);
+      line-height: 1.2; margin-bottom: 14px;
+    }
+
+    .page-lead {
+      color: var(--rs-text-secondary);
+      font-size: 15px; line-height: 1.75;
+      max-width: 620px; margin-bottom: 52px;
+    }
+
+    /* ── Section titles ── */
+    .section-heading {
+      font-family: var(--rs-font-display);
+      font-size: 18px; font-weight: 700;
+      color: var(--rs-text-primary);
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      color: var(--rs-text-secondary);
+      font-size: 13px; line-height: 1.7;
+      margin-bottom: 28px; max-width: 580px;
+    }
+
+    /* ── Algorithm card ── */
+    .algo-card {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-left: 3px solid var(--rs-accent);
+      border-radius: var(--rs-radius-lg);
+      padding: 28px 28px 24px;
+      margin-bottom: 40px;
+    }
+    .algo-card h3 {
+      font-family: var(--rs-font-display);
+      font-size: 16px; font-weight: 700;
+      color: var(--rs-text-primary); margin-bottom: 10px;
+    }
+    .algo-card p {
+      color: var(--rs-text-secondary);
+      font-size: 13px; line-height: 1.75; margin-bottom: 14px;
+    }
+    .algo-steps {
+      display: flex; flex-direction: column; gap: 8px; margin-top: 4px;
+    }
+    .algo-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 13px; color: var(--rs-text-secondary);
+    }
+    .algo-step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--rs-accent-glow);
+      border: 1px solid rgba(230,57,70,0.25);
+      color: var(--rs-accent);
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── Team grid ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+    .team-card {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 22px 20px;
+      transition: border-color 0.15s;
+    }
+    .team-card:hover { border-color: var(--rs-border-hover); }
+    .team-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--rs-accent-glow);
+      border: 1px solid rgba(230,57,70,0.2);
+      color: var(--rs-accent);
+      font-family: var(--rs-font-display);
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .team-name {
+      font-family: var(--rs-font-display);
+      font-size: 14px; font-weight: 700;
+      color: var(--rs-text-primary); margin-bottom: 3px;
+    }
+    .team-role {
+      font-size: 11px; color: var(--rs-text-muted);
+      font-weight: 500; margin-bottom: 10px;
+    }
+    .team-contrib {
+      font-size: 12px; color: var(--rs-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ── Tech stack ── */
+    .tech-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 48px;
+    }
+    .tech-pill {
+      padding: 6px 14px;
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+      color: var(--rs-text-secondary);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tech-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+
+    /* ── Scope table ── */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 560px) { .scope-grid { grid-template-columns: 1fr; } }
+
+    .scope-box {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 20px;
+    }
+    .scope-box h4 {
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .scope-box.incl h4 { color: var(--rs-accent-green); }
+    .scope-box.excl h4 { color: var(--rs-text-muted); }
+    .scope-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .scope-list li {
+      font-size: 12px; color: var(--rs-text-secondary);
+      display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+    }
+    .scope-list li::before { flex-shrink: 0; margin-top: 1px; font-size: 11px; }
+    .scope-box.incl .scope-list li::before { content: '✓'; color: var(--rs-accent-green); }
+    .scope-box.excl .scope-list li::before { content: '×'; color: var(--rs-text-muted); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">RS</div>
+      <div class="navbar-header">
+        <span class="navbar-title">RouteSafe Barangay 770</span>
+        <span class="navbar-sub">Sta. Ana, Manila</span>
+      </div>
+    </div>
+    <div class="navbar-links">
+      <a href="home.html">Home</a>
+      <a href="service.html">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="about.html" class="active">About</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn-report" onclick="window.location='index.php'">Open Map</button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-eyebrow">About This Project</div>
+    <h1 class="page-title">RouteSafe Barangay 770</h1>
+    <p class="page-lead">
+      A thesis project developing a walking path recommender system that uses 
+      <strong style="color:var(--rs-text-primary);">Dijkstra's Algorithm</strong> to suggest 
+      the safest night-time routes for residents of Barangay 770, Sta. Ana, Manila — 
+      based on real crime hotspot data.
+    </p>
+
+    <!-- Algorithm -->
+    <div class="section-heading">How Dijkstra's Algorithm Works Here</div>
+    <p class="section-sub">
+      The system models Barangay 770's street network as a weighted graph. 
+      Each intersection is a node; each street segment is an edge. 
+      Weights are based on distance plus a safety penalty for nearby crime incidents.
+    </p>
+
+    <div class="algo-card">
+      <h3>Weighted Safety Graph</h3>
+      <p>
+        Streets near danger zones receive higher edge weights, making Dijkstra's Algorithm 
+        naturally prefer paths that avoid those areas when finding the shortest (safest) path.
+      </p>
+      <div class="algo-steps">
+        <div class="algo-step">
+          <div class="algo-step-num">1</div>
+          <span>All street intersections in Brgy 770 are mapped as graph nodes</span>
+        </div>
+        <div class="algo-step">
+          <div class="algo-step-num">2</div>
+          <span>Each street segment gets a weight = distance + crime proximity penalty</span>
+        </div>
+        <div class="algo-step">
+          <div class="algo-step-num">3</div>
+          <span>Dijkstra's finds the minimum-weight path from start to destination</span>
+        </div>
+        <div class="algo-step">
+          <div class="algo-step-num">4</div>
+          <span>The result is the route with the best balance of distance and safety</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="section-heading">Technology Stack</div>
+    <p class="section-sub">Built with open-source tools accessible to the barangay.</p>
+    <div class="tech-row">
+      <div class="tech-pill"><div class="tech-dot" style="background:#e63946;"></div>PHP</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#eab308;"></div>JavaScript (Vanilla)</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#22c55e;"></div>Leaflet.js</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#3b82f6;"></div>OpenStreetMap</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#94a3b8;"></div>HTML5 / CSS3</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#e63946;"></div>Leaflet Routing Machine</div>
+      <div class="tech-pill"><div class="tech-dot" style="background:#eab308;"></div>MySQL (planned)</div>
+    </div>
+
+    <!-- Scope -->
+    <div class="section-heading">Project Scope</div>
+    <p class="section-sub">What this system covers and what it doesn't.</p>
+    <div class="scope-grid">
+      <div class="scope-box incl">
+        <h4>Included</h4>
+        <ul class="scope-list">
+          <li>Walking route recommendations for Barangay 770</li>
+          <li>Crime hotspot visualization from reported incidents</li>
+          <li>Night-time safety scoring per route</li>
+          <li>Dijkstra's Algorithm path calculation</li>
+          <li>Interactive map with danger zone overlays</li>
+        </ul>
+      </div>
+      <div class="scope-box excl">
+        <h4>Not Included</h4>
+        <ul class="scope-list">
+          <li>Vehicle or motorcycle routing</li>
+          <li>Real-time crime reporting (planned)</li>
+          <li>Routes outside Barangay 770 boundaries</li>
+          <li>Police dispatch integration</li>
+          <li>CCTV or live surveillance feeds</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="section-heading">Development Team</div>
+    <p class="section-sub">Thesis project for BS Information Technology.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">Dev</div>
+        <div class="team-name">Developer 1</div>
+        <div class="team-role">Lead Developer</div>
+        <div class="team-contrib">Frontend development, map integration, routing algorithm implementation</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">Dev</div>
+        <div class="team-name">Developer 2</div>
+        <div class="team-role">Backend / Database</div>
+        <div class="team-contrib">PHP backend, database design, crime data collection and encoding</div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">Dev</div>
+        <div class="team-name">Developer 3</div>
+        <div class="team-role">UI / Research</div>
+        <div class="team-contrib">UI/UX design, literature review, documentation and thesis writing</div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

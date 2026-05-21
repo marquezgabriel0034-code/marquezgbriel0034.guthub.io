@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services — RouteSafe Barangay 770</title>
+  <link rel="stylesheet" href="navbar.css">
+  <style>
+    /* ── Page layout ── */
+    .page-wrapper {
+      min-height: calc(100vh - 58px);
+      padding: 48px 24px 72px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      margin-bottom: 48px;
+    }
+    .page-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--rs-accent);
+      margin-bottom: 10px;
+    }
+    .page-title {
+      font-family: var(--rs-font-display);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--rs-text-primary);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .page-desc {
+      color: var(--rs-text-secondary);
+      font-size: 15px;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    /* ── Service cards grid ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .service-card {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 24px;
+      transition: border-color 0.15s, background 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card:hover {
+      border-color: var(--rs-border-hover);
+      background: var(--rs-bg-raised);
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      border-radius: var(--rs-radius-lg) var(--rs-radius-lg) 0 0;
+    }
+    .service-card.card-red::before    { background: var(--rs-accent); }
+    .service-card.card-amber::before  { background: var(--rs-accent-amber); }
+    .service-card.card-green::before  { background: var(--rs-accent-green); }
+    .service-card.card-blue::before   { background: var(--rs-accent-blue); }
+
+    .service-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--rs-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .icon-red   { background: rgba(230,57,70,0.12); }
+    .icon-amber { background: rgba(234,179,8,0.12); }
+    .icon-green { background: rgba(34,197,94,0.12); }
+    .icon-blue  { background: rgba(59,130,246,0.12); }
+
+    .service-title {
+      font-family: var(--rs-font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--rs-text-primary);
+      margin-bottom: 8px;
+    }
+    .service-desc {
+      color: var(--rs-text-secondary);
+      font-size: 13px;
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+    .service-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 56px;
+      padding: 24px;
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+    }
+    .stat-item { text-align: center; }
+    .stat-val {
+      font-family: var(--rs-font-display);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--rs-text-primary);
+      line-height: 1;
+    }
+    .stat-label {
+      color: var(--rs-text-muted);
+      font-size: 11px;
+      margin-top: 5px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── CTA block ── */
+    .cta-block {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .cta-block h2 {
+      font-family: var(--rs-font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--rs-text-primary);
+      margin-bottom: 6px;
+    }
+    .cta-block p {
+      color: var(--rs-text-secondary);
+      font-size: 13px;
+      max-width: 420px;
+    }
+    .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">RS</div>
+      <div class="navbar-header">
+        <span class="navbar-title">RouteSafe Barangay 770</span>
+        <span class="navbar-sub">Sta. Ana, Manila</span>
+      </div>
+    </div>
+    <div class="navbar-links">
+      <a href="map.php">Map</a>
+      <a href="service.html" class="active">Services</a>
+      <a href="contact.html">Contact</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn-report" onclick="window.location='index.php'">Open Map</button>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="page-wrapper">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-eyebrow">Our Services</div>
+      <h1 class="page-title">Safety Tools for Barangay 770</h1>
+      <p class="page-desc">
+        RouteSafe provides residents of Sta. Ana with data-driven tools to navigate 
+        their community safely — especially at night.
+      </p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-val" style="color:var(--rs-accent);">4</div>
+        <div class="stat-label">Mapped Danger Zones</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" style="color:var(--rs-accent-amber);">28+</div>
+        <div class="stat-label">Crime Incidents Logged</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" style="color:var(--rs-accent-green);">Dijkstra</div>
+        <div class="stat-label">Algorithm Used</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-val" style="color:var(--rs-accent-blue);">24/7</div>
+        <div class="stat-label">Route Engine</div>
+      </div>
+    </div>
+
+    <!-- Service cards -->
+    <div class="services-grid">
+
+      <div class="service-card card-red">
+        <div class="service-icon icon-red">🗺️</div>
+        <div class="service-title">Safe Route Planner</div>
+        <p class="service-desc">
+          Uses Dijkstra's algorithm to calculate the safest walking path between two points, 
+          actively avoiding crime hotspots and danger zones in Barangay 770.
+        </p>
+        <span class="service-tag badge-red">Core Feature</span>
+      </div>
+
+      <div class="service-card card-amber">
+        <div class="service-icon icon-amber">⚠️</div>
+        <div class="service-title">Crime Hotspot Mapping</div>
+        <p class="service-desc">
+          Visual overlays of real crime incident data from Barangay 770, including snatching, 
+          robbery, and assault zones with risk level classification.
+        </p>
+        <span class="service-tag badge-amber">Safety Data</span>
+      </div>
+
+      <div class="service-card card-green">
+        <div class="service-icon icon-green">📊</div>
+        <div class="service-title">Safety Score Rating</div>
+        <p class="service-desc">
+          Every planned route is assigned a safety score (0–100) based on proximity to 
+          danger zones, time of day, and historical incident density.
+        </p>
+        <span class="service-tag badge-green">Analytics</span>
+      </div>
+
+      <div class="service-card card-blue">
+        <div class="service-icon icon-blue">🔔</div>
+        <div class="service-title">Night Mode Alerts</div>
+        <p class="service-desc">
+          Automatic night-time risk elevation system. Between 8PM and 6AM, 
+          the system activates enhanced warnings for known high-risk corridors.
+        </p>
+        <span class="service-tag badge-blue">Alert System</span>
+      </div>
+
+      <div class="service-card card-red">
+        <div class="service-icon icon-red">📍</div>
+        <div class="service-title">Incident Reporting</div>
+        <p class="service-desc">
+          Residents can submit new incident reports to help keep the safety database 
+          current and accurate for the whole community.
+        </p>
+        <span class="service-tag badge-red">Community</span>
+      </div>
+
+      <div class="service-card card-amber">
+        <div class="service-icon icon-amber">📱</div>
+        <div class="service-title">Mobile-Friendly Access</div>
+        <p class="service-desc">
+          Fully responsive interface works on any smartphone — access the safe route 
+          planner on-the-go before stepping out at night.
+        </p>
+        <span class="service-tag badge-amber">Accessibility</span>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-block">
+      <div>
+        <h2>Ready to find the safest route?</h2>
+        <p>Open the interactive map and plan your night-time route with real safety data from Barangay 770.</p>
+      </div>
+      <div class="cta-actions">
+        <a href="index.php" class="btn btn-primary">Open Safe Map →</a>
+        <a href="about.html" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

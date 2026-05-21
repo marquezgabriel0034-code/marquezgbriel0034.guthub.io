@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RouteSafe Barangay 770 - Ride App Style</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="navbar.css" />
+
+    <!-- STYLES -->
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; }
+        #map { width: 100%; height: 100vh; }
+        
+        .info-box {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Notification Container */
+        #notification-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 350px;
+        }
+
+        .notification {
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideInRight 0.3s ease-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notification:hover { opacity: 0.95; }
+        .notification.success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .notification.warning { background: linear-gradient(135deg, #ffc107, #fd7e14); color: #333; }
+        .notification.error { background: linear-gradient(135deg, #dc3545, #c82333); }
+        .notification.info { background: linear-gradient(135deg, #007bff, #6610f2); }
+        .notification.danger { background: linear-gradient(135deg, #ff4757, #c0392b); border-left: 4px solid #ffd700; }
+        .notification .notif-icon { font-size: 20px; margin-right: 10px; }
+        .notification .notif-content { flex: 1; }
+        .notification .notif-title { font-weight: bold; font-size: 13px; margin-bottom: 2px; }
+        .notification .notif-message { font-size: 12px; opacity: 0.9; }
+        .notification .close-btn { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; padding: 0 0 0 10px; opacity: 0.7; }
+        .notification .close-btn:hover { opacity: 1; }
+
+        /* LIVE NAVIGATOR UI */
+        .live-nav-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 250px;
+            font-family: Arial, sans-serif;
+            display: none; /* Hidden by default */
+        }
+        .live-nav-panel h3 { margin: 0 0 10px 0; color: #333; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .live-nav-panel .status { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+        .live-nav-panel .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
+        .live-nav-panel .status-dot.active { background: #28a745; animation: pulse 1.5s infinite; }
+        .live-nav-panel .coordinates { font-size: 11px; color: #666; margin-top: 5px; }
+        .live-nav-panel .speed-info { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; font-size: 12px;}
+
+        /* Start Nav Button */
+        .start-nav-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            z-index: 1001;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        .start-nav-btn.active { background: linear-gradient(135deg, #dc3545, #c82333); box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4); }
+
+        /* Danger Overlay (Flashes red on screen when in danger zone) */
+        .danger-alert-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 0, 0, 0.2);
+            z-index: 9998;
+            pointer-events: none;
+            animation: dangerFlash 0.5s ease-in-out infinite alternate;
+            display: none;
+        }
+        .danger-alert-overlay.active { display: block; }
+
+        /* User Location Marker Animation */
+        .user-location-marker { background: none; border: none; }
+        .user-location-marker .pulse-ring {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0, 123, 255, 0.4);
+            animation: userPulse 2s ease-out infinite;
+            position: absolute; top: -15px; left: -15px;
+        }
+        .user-location-marker .user-dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            background: #007bff; border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            position: absolute; top: -3px; left: -3px;
+        }
+
+        @keyframes userPulse { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes dangerFlash { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- DANGER ALERT OVERLAY -->
+    <div class="danger-alert-overlay" id="dangerOverlay"></div>
+
+    <!-- NOTIFICATION CONTAINER -->
+    <div id="notification-container"></div>
+
+    <div class="navbar">
+        <div class="navbar-header"><b>RouteSafe Barangay 770</b></div>
+        <div class="navbar-links">
+            <a href="index.php" class="active">Home</a>
+            <a href="service.html">Service</a>
+            <a href="contact.html">Contact</a>
+            <a href="about.html">About</a>
+        </div>
+    </div>
+
+    <div class="info-box" id="info">⚠️ <b>Red zones</b> show past crime hotspots. Click on map or use search to set <b>Start</b> and <b>End</b> points</div>
+    <div id="map"></div>
+
+    <!-- LIVE NAVIGATOR PANEL -->
+    <div class="live-nav-panel" id="liveNavPanel">
+        <h3>📍 Live Navigator</h3>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Initializing GPS...</span>
+        </div>
+        <div class="coordinates">
+            <strong>Lat:</strong> <span id="userLat">--</span> | 
+            <strong>Lng:</strong> <span id="userLng">--</span>
+        </div>
+        <div class="speed-info">
+            <span>Accuracy: <strong id="accuracy">--</strong>m</span>
+            <span>Zone: <strong id="currentZone">Safe</strong></span>
+        </div>
+    </div>
+
+    <!-- START NAVIGATION BUTTON -->
+    <button class="start-nav-btn" id="startNavBtn" onclick="toggleLiveNavigation()">
+        🚗 Start Live Tracking
+    </button>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+    <script>
+        // --- 1. NOTIFICATION SYSTEM ---
+        function showNotification(message, type = 'info', title = '', persistent = false) {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            const icons = { success: '✓', warning: '⚠', error: '✕', info: 'ℹ', danger: '🚨' };
+            const defaultTitles = { success: 'Success', warning: 'Warning', error: 'Alert', info: 'Info', danger: 'DANGER!' };
+            const displayTitle = title || defaultTitles[type];
+
+            notification.innerHTML = `
+                <span class="notif-icon">${icons[type]}</span>
+                <div class="notif-content">
+                    <div class="notif-title">${displayTitle}</div>
+                    <div class="notif-message">${message}</div>
+                </div>
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(notification);
+
+            let autoRemoveTime = persistent ? 10000 : 4000;
+            if (type === 'danger' || type === 'warning') autoRemoveTime = persistent ? 15000 : 6000;
+
+            if (!persistent) {
+                setTimeout(() => {
+                    notification.style.animation = 'slideOutRight 0.3s ease-out';
+                    setTimeout(() => notification.remove(), 300);
+                }, autoRemoveTime);
+            }
+
+            notification.addEventListener('click', () => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            });
+        }
+
+       // Initialize Map - CENTERED ON STA. ANA, MANILA (Tenorio St area)
+        var map = L.map('map').setView([14.5875, 121.0078], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // DANGER ZONES - TENORIO ST, ORO ST, SAGRADA FAMILIA ST
+        const dangerZones = [
+            // ZONE 1: TENORIO STREET
+            {
+                coords: [
+                    [14.5735, 121.0085],
+                    [14.5740, 121.0089],
+                    [14.5743, 121.0086],
+                    [14.5739, 121.0082],
+                ],
+                popup: "🚨 <b>TENORIO STREET HOTSPOT</b><br>📊 7+ Riding in tandem incident<br>⏰ Peak: 9PM-2AM",
+                name: "Tenorio Street"
+            },
+            // ZONE 2: ORO B STREET
+            {
+                coords: [
+                    [14.5730, 121.0102],
+                    [14.5732, 121.0100],
+                    [14.5729, 121.0095],
+                    [14.5725, 121.0093],
+                    [14.5723, 121.0095]
+                ],
+                popup: "🚨 <b>ORO B STREET DANGER ZONE</b><br>📊 12+ Phone/Bag Snatching<br>⚠️ High motorcycle snatch risk",
+                name: "Oro B Street"
+            },
+            // ZONE 3: SAGRADA FAMILIA ST
+            {
+                coords: [
+                    [14.5730, 121.0080],
+                    [14.5727, 121.0075],
+                    [14.5728, 121.0075],
+                    [14.5729, 121.0072],
+                    [14.5732, 121.0075]
+                ],
+                popup: "⚠️ <b>SAGRADA FAMILIA ST</b><br>📊 4+ Nighttime Assaults<br>🌙 Reported 10PM-3AM",
+                name: "Sagrada Familia St"
+            },
+            // ZONE 4: Intersection
+            {
+                coords: [
+                    [14.5873, 121.0078],
+                    [14.5869, 121.0081],
+                    [14.5867, 121.0079],
+                    [14.5870, 121.0075],
+                    [14.5874, 121.0076]
+                ],
+                popup: "🚨 <b>TENORIO x ORO INTERSECTION</b><br>📊 Multiple incidents<br>❌ Avoid after dark",
+                name: "Tenorio x Oro Intersection"
+            }
+        ];
+
+        const dangerZoneLayer = L.layerGroup().addTo(map);
+        dangerZones.forEach((zone, index) => {
+            const polygon = L.polygon(zone.coords, { color: '#ff4757', fillOpacity: 0.4, weight: 2 }).addTo(dangerZoneLayer);
+            polygon.bindPopup(`<b>Danger Zone #${index+1}</b><br>${zone.popup}`);
+        });
+
+        // --- 4. CRIME INCIDENT MARKERS ---
+        const crimeIncidents = [
+            { lat: 14.6092, lng: 120.9912, type: 'robbery', desc: 'Bag snatch - 2AM' },
+            { lat: 14.6087, lng: 120.9914, type: 'robbery', desc: 'Phone theft - 11PM' },
+            { lat: 14.6078, lng: 120.9928, type: 'snatching', desc: 'Motorcycle snatch' },
+            { lat: 14.6096, lng: 120.9907, type: 'assault', desc: 'Group fight - 1AM' },
+            { lat: 14.6083, lng: 120.9923, type: 'snatching', desc: 'Chain snatch' }
+        ];
+
+        const crimeMarkers = L.markerClusterGroup({
+            iconCreateFunction: function(cluster) {
+                return L.divIcon({
+                    html: '<div style="background:red;color:white;border-radius:50%;width:30px;height:30px;line-height:30px;text-align:center;font-weight:bold;font-size:14px;">' + cluster.getChildCount() + '</div>',
+                    className: 'crime-marker', iconSize: [30, 30]
+                });
+            }
+        });
+
+        crimeIncidents.forEach(incident => {
+            const icons = { robbery: '🚨', snatching: '💨', assault: '👊' };
+            const icon = L.divIcon({
+                html: icons[incident.type] || '⚠️', className: 'crime-marker', iconSize: [25, 25], iconAnchor: [12, 12]
+            });
+            const marker = L.marker([incident.lat, incident.lng], { icon: icon });
+            marker.bindPopup(`<b>${incident.type.toUpperCase()}</b><br>${incident.desc}`);
+            crimeMarkers.addLayer(marker);
+        });
+        map.addLayer(crimeMarkers);
+
+        // --- 5. ROUTING ---
+        var routingControl = L.Routing.control({
+            waypoints: [], routeWhileDragging: true,
+            lineOptions: { styles: [{ color: 'blue', weight: 5 }] }
+        }).addTo(map);
+
+        var startMarker = null, endMarker = null, clickStep = 0;
+
+        map.on('click', function(e) {
+            if (isNavigating) return; // Disable click routing while live tracking
+            
+            if (clickStep === 0) {
+                if (startMarker) map.removeLayer(startMarker);
+                startMarker = L.marker(e.latlng, { draggable: true }).addTo(map).bindPopup("Start").openPopup();
+                startMarker.on('dragend', updateRoute);
+                showNotification('Start point set. Now click to set End point.', 'success');
+                clickStep = 1;
+            } else if (clickStep === 1) {
+                if (endMarker) map.removeLayer(endMarker);
+                endMarker = L.marker(e.latlng, { draggable: true }).addTo(map).bindPopup("End").openPopup();
+                endMarker.on('dragend', updateRoute);
+                showNotification('End point set! Calculating route...', 'info');
+                updateRoute();
+                clickStep = 0;
+            }
+        });
+
+        function updateRoute() {
+            if (!startMarker || !endMarker) return;
+            routingControl.setWaypoints([startMarker.getLatLng(), endMarker.getLatLng()]);
+
+            let dangerWarnings = [];
+            dangerZones.forEach(zone => {
+                if (isPointInPolygonRayCast([startMarker.getLatLng().lat, startMarker.getLatLng().lng], zone.coords) || 
+                    isPointInPolygonRayCast([endMarker.getLatLng().lat, endMarker.getLatLng().lng], zone.coords)) {
+                    dangerWarnings.push(zone.name);
+                }
+            });
+
+            if (dangerWarnings.length > 0) {
+                showNotification(`Route passes through danger areas: ${dangerWarnings.join(', ')}.`, 'danger');
+            } else {
+                showNotification('Your route is set. Drive safely!', 'success');
+            }
+        }
+
+        // --- 6. LIVE NAVIGATOR & DANGER DETECTION (CORE FEATURE) ---
+        let isNavigating = false;
+        let watchId = null;
+        let userMarker = null;
+        let inDangerZone = false; // Tracks if user is currently inside a danger zone
+
+        const userIcon = L.divIcon({
+            className: 'user-location-marker',
+            html: '<div class="pulse-ring"></div><div class="user-dot"></div>',
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+        });
+
+        function toggleLiveNavigation() {
+            const btn = document.getElementById('startNavBtn');
+            const panel = document.getElementById('liveNavPanel');
+
+            isNavigating = !isNavigating;
+
+            if (isNavigating) {
+                // START NAVIGATION
+                btn.innerHTML = '🛑 Stop Tracking';
+                btn.classList.add('active');
+                panel.style.display = 'block';
+                
+                if ("geolocation" in navigator) {
+                    watchId = navigator.geolocation.watchPosition(updateLivePosition, handleLocationError, {
+                        enableHighAccuracy: true, maximumAge: 0, timeout: 5000
+                    });
+                    showNotification("Live tracking activated.", "success", "System Active");
+                } else {
+                    showNotification("Geolocation is not supported by your browser.", "error");
+                    isNavigating = false;
+                }
+            } else {
+                // STOP NAVIGATION
+                btn.innerHTML = '🚗 Start Live Tracking';
+                btn.classList.remove('active');
+                panel.style.display = 'none';
+                
+                if (watchId) navigator.geolocation.clearWatch(watchId);
+                if (userMarker) { map.removeLayer(userMarker); userMarker = null; }
+                document.getElementById('dangerOverlay').classList.remove('active');
+                inDangerZone = false;
+                showNotification("Live tracking ended.", "info");
+            }
+        }
+
+        function updateLivePosition(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            
+            // Update UI Panel
+            document.getElementById('statusText').innerText = "GPS Active";
+            document.getElementById('statusDot').className = "status-dot active";
+            document.getElementById('userLat').innerText = lat.toFixed(5);
+            document.getElementById('userLng').innerText = lng.toFixed(5);
+            document.getElementById('accuracy').innerText = Math.round(position.coords.accuracy);
+
+            // Update Marker
+            if (!userMarker) {
+                userMarker = L.marker([lat, lng], {icon: userIcon, zIndexOffset: 1000}).addTo(map);
+                map.setView([lat, lng], 18);
+            } else {
+                userMarker.setLatLng([lat, lng]);
+                map.panTo([lat, lng]); // Keep map centered on user
+            }
+
+            // Check if user walked into a danger zone
+            checkLiveDangerZones(lat, lng);
+        }
+
+        function handleLocationError(error) {
+            document.getElementById('statusText').innerText = "GPS Lost / Searching...";
+            document.getElementById('statusDot').className = "status-dot";
+        }
+
+        // Ray-Casting Algorithm: Perfectly checks if a point is inside a custom drawn polygon
+        function isPointInPolygonRayCast(point, polygon) {
+            let x = point[0], y = point[1];
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                let xi = polygon[i][0], yi = polygon[i][1];
+                let xj = polygon[j][0], yj = polygon[j][1];
+                let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function checkLiveDangerZones(lat, lng) {
+            let foundZone = null;
+            
+            // Loop through all zones to see if the user's lat/lng is inside one
+            for (let zone of dangerZones) {
+                if (isPointInPolygonRayCast([lat, lng], zone.coords)) {
+                    foundZone = zone;
+                    break;
+                }
+            }
+
+            const currentZoneEl = document.getElementById('currentZone');
+            const overlay = document.getElementById('dangerOverlay');
+
+            if (foundZone) {
+                // If they are in a zone, and weren't in one a second ago -> Trigger Alert
+                if (!inDangerZone) {
+                    inDangerZone = true;
+                    currentZoneEl.innerHTML = `<span style="color:red; font-weight:bold;">${foundZone.name}</span>`;
+                    overlay.classList.add('active'); // Flash red screen
+                    
+                    // Trigger the notification system
+                    showNotification(
+                        `SECURITY ALERT: You have entered ${foundZone.name}. Secure your belongings and stay alert!`, 
+                        'danger', 
+                        '⚠️ DANGER ZONE ENTERED', 
+                        true // persistent notification
+                    );
+                }
+            } else {
+                // If they are not in a zone, but were in one a second ago -> Clear Alert
+                if (inDangerZone) {
+                    inDangerZone = false;
+                    currentZoneEl.innerHTML = `<span style="color:green; font-weight:bold;">Safe</span>`;
+                    overlay.classList.remove('active'); // Remove red screen
+                    showNotification("You have exited the danger zone.", "success", "Safe Area");
+                }
+            }
+        }
+
+        // Search Bar
+        L.Control.geocoder({ placeholder: "Search location..." }).addTo(map);
+
+    </script>
+</body>
+</html>

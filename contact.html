@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — RouteSafe Barangay 770</title>
+  <link rel="stylesheet" href="navbar.css" />
+  <style>
+    .page-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    .page-eyebrow {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--rs-accent); margin-bottom: 10px;
+    }
+    .page-title {
+      font-family: var(--rs-font-display);
+      font-size: 32px; font-weight: 700;
+      color: var(--rs-text-primary);
+      line-height: 1.2; margin-bottom: 14px;
+    }
+    .page-lead {
+      color: var(--rs-text-secondary);
+      font-size: 15px; line-height: 1.75;
+      max-width: 540px; margin-bottom: 48px;
+    }
+
+    /* ── Layout ── */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 700px) {
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 28px;
+    }
+    .form-card h2 {
+      font-family: var(--rs-font-display);
+      font-size: 16px; font-weight: 700;
+      color: var(--rs-text-primary); margin-bottom: 20px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: var(--rs-text-secondary);
+      margin-bottom: 7px; letter-spacing: 0.2px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--rs-bg-raised);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-sm);
+      color: var(--rs-text-primary);
+      font-family: var(--rs-font-body);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: var(--rs-text-dim); }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus { border-color: var(--rs-accent); }
+
+    .form-select option { background: var(--rs-bg-raised); }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 11px;
+      background: var(--rs-accent);
+      color: white;
+      border: none;
+      border-radius: var(--rs-radius-sm);
+      font-family: var(--rs-font-display);
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 4px;
+    }
+    .btn-submit:hover { background: var(--rs-accent-hover); }
+    .btn-submit:active { transform: scale(0.99); }
+
+    .alert {
+      padding: 9px 12px;
+      border-radius: var(--rs-radius-sm);
+      font-size: 12px; font-weight: 500;
+      margin-bottom: 16px; display: none;
+    }
+    .alert-success { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+    .alert.show { display: block; }
+
+    /* ── Info sidebar ── */
+    .info-sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+    .info-card {
+      background: var(--rs-bg-surface);
+      border: 1px solid var(--rs-border);
+      border-radius: var(--rs-radius-lg);
+      padding: 20px;
+    }
+    .info-card h3 {
+      font-family: var(--rs-font-display);
+      font-size: 13px; font-weight: 700;
+      color: var(--rs-text-primary); margin-bottom: 14px;
+    }
+
+    .info-row {
+      display: flex; align-items: flex-start;
+      gap: 10px; margin-bottom: 12px;
+    }
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-icon {
+      width: 30px; height: 30px;
+      border-radius: var(--rs-radius-sm);
+      background: var(--rs-accent-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .info-text-label {
+      font-size: 10px; font-weight: 700;
+      color: var(--rs-text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+    .info-text-val {
+      font-size: 12px; color: var(--rs-text-secondary); line-height: 1.5;
+    }
+
+    /* Emergency card */
+    .emergency-card {
+      background: rgba(230,57,70,0.07);
+      border: 1px solid rgba(230,57,70,0.2);
+      border-radius: var(--rs-radius-lg);
+      padding: 18px 20px;
+    }
+    .emergency-card h3 {
+      font-family: var(--rs-font-display);
+      font-size: 13px; font-weight: 700;
+      color: var(--rs-accent); margin-bottom: 12px;
+    }
+    .emergency-num {
+      font-family: var(--rs-font-display);
+      font-size: 22px; font-weight: 700;
+      color: var(--rs-text-primary); line-height: 1;
+    }
+    .emergency-label {
+      font-size: 11px; color: var(--rs-text-muted);
+      margin-top: 3px; margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="navbar-logo">RS</div>
+      <div class="navbar-header">
+        <span class="navbar-title">RouteSafe Barangay 770</span>
+        <span class="navbar-sub">Sta. Ana, Manila</span>
+      </div>
+    </div>
+    <div class="navbar-links">
+      <a href="home.html">Home</a>
+      <a href="service.html">Services</a>
+      <a href="contact.html" class="active">Contact</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn-report" onclick="window.location='index.php'">Open Map</button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <div class="page-eyebrow">Get in Touch</div>
+    <h1 class="page-title">Contact & Report</h1>
+    <p class="page-lead">
+      Report a safety concern, submit a new incident for the map, 
+      or reach out to the RouteSafe development team.
+    </p>
+
+    <div class="contact-layout">
+
+      <!-- FORM -->
+      <div class="form-card">
+        <h2>Send a Message</h2>
+
+        <div class="alert alert-success" id="alert-ok">
+          ✅ Message sent! We'll get back to you shortly.
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" id="f-fname" type="text" placeholder="Juan" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" id="f-lname" type="text" placeholder="dela Cruz" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="f-email" type="email" placeholder="juan@example.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Message Type</label>
+          <select class="form-select" id="f-type">
+            <option value="">Select type...</option>
+            <option value="incident">Report a Crime Incident</option>
+            <option value="zone">Report a Danger Zone</option>
+            <option value="feedback">App Feedback</option>
+            <option value="general">General Inquiry</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="f-msg"
+            placeholder="Describe the incident, location, time, and any relevant details..."></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="handleSubmit()">Send Message</button>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="info-sidebar">
+
+        <div class="emergency-card">
+          <h3>🚨 Emergency?</h3>
+          <div class="emergency-num">911</div>
+          <div class="emergency-label">Philippine Emergency Hotline</div>
+          <div class="emergency-num">166</div>
+          <div class="emergency-label">PNP Hotline</div>
+        </div>
+
+        <div class="info-card">
+          <h3>Project Information</h3>
+          <div class="info-row">
+            <div class="info-icon">📍</div>
+            <div>
+              <div class="info-text-label">Location</div>
+              <div class="info-text-val">Barangay 770, Sta. Ana<br>Manila, Philippines</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">🎓</div>
+            <div>
+              <div class="info-text-label">Project Type</div>
+              <div class="info-text-val">BS Information Technology<br>Thesis Project</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">⚙️</div>
+            <div>
+              <div class="info-text-label">Algorithm</div>
+              <div class="info-text-val">Dijkstra's Shortest Path<br>Safety-weighted graph</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Response Time</h3>
+          <div class="info-row">
+            <div class="info-icon">📩</div>
+            <div>
+              <div class="info-text-label">General Inquiries</div>
+              <div class="info-text-val">Within 2–3 business days</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">⚠️</div>
+            <div>
+              <div class="info-text-label">Incident Reports</div>
+              <div class="info-text-val">Reviewed within 24 hours<br>and added to the map</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function handleSubmit() {
+      const fname = document.getElementById('f-fname').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const msg   = document.getElementById('f-msg').value.trim();
+
+      if (!fname || !email || !msg) {
+        alert('Please fill in your name, email, and message.');
+        return;
+      }
+
+      // Show success (connect to PHP mailer / database for production)
+      const alert = document.getElementById('alert-ok');
+      alert.classList.add('show');
+      setTimeout(() => alert.classList.remove('show'), 5000);
+
+      // Clear form
+      ['f-fname','f-lname','f-email','f-type','f-msg'].forEach(id => {
+        const el = document.getElementById(id);
+        el.value = '';
+      });
+    }
+  </script>
+
+</body>
+</html>
